@@ -1,0 +1,158 @@
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix fn: <http://www.w3.org/2005/xpath-functions#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix nsp: <https://w3id.org/se/building/nsp#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix path: <http://www.ontotext.com/path#> .
+@prefix ref: <https://brickschema.org/schema/Brick/ref#> .
+@prefix s223: <http://data.ashrae.org/standard223#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcterms: <http://purl.org/dc/terms#> .
+@prefix bacnet: <http://data.ashrae.org/bacnet/2020#> .
+@prefix brick: <https://brickschema.org/schema/Brick#> .
+@prefix tag: <https://brickschema.org/schema/BrickTag#> .
+@prefix rdf4j: <http://rdf4j.org/schema/rdf4j#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix ext: <https://example.com/schema/BrickExtension#> .
+@prefix wgs: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix bldg: <https://example.com/bldg#> .
+@prefix gn: <http://www.geonames.org/ontology#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix bsh: <https://brickschema.org/schema/BrickShape#> .
+@prefix sesame: <http://www.openrdf.org/schema/sesame#> .
+@prefix qudtqk: <http://qudt.org/vocab/quantitykind/> .
+@prefix sdo: <http://schema.org/> .
+
+ext:VirtualSensor a owl:Class ;
+  rdfs:subClassOf brick:Sensor ;
+  rdfs:label "Virtual Sensor" ;
+  skos:definition "A virtual sensor instead of physical sensor." .
+
+
+ext:vsSumOf a owl:ObjectProperty ;
+    rdfs:subPropertyOf  brick:hasPart ;
+    skos:definition "The sensed value of the subject should be compared to the sum value of the objects" ;
+    rdfs:domain ext:VirtualSensor ;
+    rdfs:range  brick:Sensor .
+	
+ext:vsMeanOf a owl:ObjectProperty ;
+    rdfs:subPropertyOf  brick:hasPart ;
+    skos:definition "The sensed value of the subject should be compared to the mean value of the objects" ;
+    rdfs:domain ext:VirtualSensor ;
+    rdfs:range  brick:Sensor .	
+
+ext:Envelope a owl:Class ;
+  rdfs:subClassOf brick:Equipment ;
+  rdfs:label "Building envelope" ;
+  skos:definition "All of the elements of the outer shell that maintain a dry, heated, or cooled indoor environment and facilitate its climate control." .	
+
+ext:Exterior_Wall a owl:Class ;
+  rdfs:subClassOf ext:Envelope ;
+  rdfs:label "Building exterior wall" ;
+  skos:definition "A building exterior wall." .	 
+  	
+ext:Window a owl:Class  ;
+  rdfs:subClassOf ext:Envelope  ;
+  rdfs:label "Window" ;
+  skos:definition "A window." .	   
+
+ext:Door a owl:Class ;
+  rdfs:subClassOf ext:Envelope ;
+  rdfs:label "Door" ;
+  skos:definition "A door." .	   			
+
+ext:Clothing a brick:EntityProperty ;
+    rdfs:label "Clothing insulation" ;    
+	rdfs:domain ext:Occupant ;
+    rdfs:range bsh:ClothingShape ;
+	skos:definition "Clothing insulation as a parameter for the thermal comfort calculation" .
+	
+bsh:ClothingShape a owl:Class,
+        sh:NodeShape ;
+    rdfs:subClassOf bsh:ValueShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( unit:clo ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path brick:hasUnit ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:or bsh:NumericValue ;
+            sh:path brick:value ] .			
+	
+ext:Activity_Level a brick:EntityProperty ;
+    rdfs:label "Occupant Activity Level" ;
+    rdfs:domain ext:Occupant ;
+    rdfs:range bsh:ActivityLevelShape ;
+	skos:definition "The activity level that drives the amount of internal gains due to occupants" . 
+	
+bsh:ActivityLevelShape a owl:Class,
+        sh:NodeShape ;
+    rdfs:subClassOf bsh:ValueShape ;
+    sh:property [ a sh:PropertyShape ;
+            sh:in ( unit:Met ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:path brick:hasUnit ],
+        [ a sh:PropertyShape ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:or bsh:NumericValue ;
+            sh:path brick:value ] .		
+				
+ext:Occupant a owl:Class ;
+    rdfs:label "Occupant" ;
+    rdfs:subClassOf  brick:Entity, brick:Class ;
+    skos:definition "Building occupant, which can be an individual occupant or a group of occupants sharing some common attributes" .
+
+
+ext:Brine_Supply_Tank a owl:Class ;
+  rdfs:subClassOf brick:HVAC_Equipment ;
+  rdfs:label "Brine supply Tank" ;
+  skos:definition "A device for storing and supplying brine" .
+
+ext:Brine_Return_Tank a owl:Class ;
+  rdfs:subClassOf brick:HVAC_Equipment ;
+  rdfs:label "Brine return Tank" ;
+  skos:definition "A device for storing and returning brine" .
+
+ext:Brine_Pump a owl:Class;
+  rdfs:subClassOf brick:Water_Pump ;
+  rdfs:label "Brine pump" ;
+  skos:definition "A pump that performs work on brine" .
+		
+ext:Cold_Recovery a owl:Class ;
+  rdfs:subClassOf brick:Heat_Exchanger ;
+  rdfs:label "Cold Recovery" ;
+  skos:definition "A device for recovering cold energy" .		
+  
+ext:Heat_Recovery a owl:Class ;
+  rdfs:subClassOf brick:Heat_Exchanger ;
+  rdfs:label "Heat Recovery" ;
+  skos:definition "A device for recovering heat" .		  
+
+ext:Brine_Heat_Exchanger  a owl:Class ;
+  rdfs:subClassOf brick:Heat_Exchanger ;
+  rdfs:label "Heat exchanger" ;
+  skos:definition "A heat exchanger for brine" .		
+
+ext:Chilled_Water_Tank a owl:Class ;
+  rdfs:subClassOf brick:HVAC_Equipment ;
+  rdfs:label "Chilled Water Tank" ;
+  skos:definition "A device for storing chilled water" .
+  
+ext:Hot_Water_Tank a owl:Class ;
+  rdfs:subClassOf brick:HVAC_Equipment ;
+  rdfs:label "Hot Water Tank" ;
+  skos:definition "A device for storing hot water" .
+
+ext:Heat_Pump a owl:Class;
+  rdfs:subClassOf brick:HVAC_Equipment;
+  rdfs:label "Heat Pump";
+  skos:definition "A thermodynamic heating system" .
+  
